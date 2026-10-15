@@ -126,7 +126,7 @@ exercises-dataset/
 ├── scripts/
 │   ├── build-index.mjs      # Regenerates the standalone browser dataset
 │   ├── i18n.js              # UI and exercise-taxonomy translations for six languages
-│   ├── sql-export.js        # Shared SQL schemas and INSERT generator
+│   ├── sql-export.js        # SQL schemas and INSERT generator for setup.html
 │   └── validate-dataset.mjs # Validates records, media, HTML, and SQL exporter
 ├── .github/workflows/       # Runs validation and synchronization checks in CI
 ├── index.html               # Interactive exercise browser (client-side, no server needed)
@@ -144,7 +144,7 @@ exercises-dataset/
 - **`data/exercises.js`** — Generated browser-ready copy used by both HTML tools so they work directly under `file://` without duplicating data inside each page.
 - **`scripts/build-index.mjs`** — Safely regenerates `data/exercises.js` from the canonical JSON and supports a read-only `--check` mode.
 - **`scripts/i18n.js`** — Six-language UI dictionaries plus localized category, equipment, and muscle terminology.
-- **`scripts/sql-export.js`** — Shared SQL exporter used by both HTML tools, with schemas for SQL Server, PostgreSQL, MySQL, and SQLite.
+- **`scripts/sql-export.js`** — SQL exporter used by `setup.html`, with schemas for SQL Server, PostgreSQL, MySQL, and SQLite.
 - **`scripts/validate-dataset.mjs`** — Dependency-free integrity checks for records, media, HTML scripts, DOM references, and SQL exports.
 - **`setup.html`** — Developer guide for DB setup, API integration, and LLM-assisted backend generation.
 - **`LICENSE`, `NOTICE.md`** — MIT (code/data) + the Gym visual media terms.

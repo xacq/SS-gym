@@ -19,7 +19,6 @@
   </script>
   <script src="data/exercises.js"></script>
   <script src="scripts/i18n.js"></script>
-  <script src="scripts/sql-export.js"></script>
   <style>
     /* ── Reset ─────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,8 +26,6 @@
     img { display: block; max-width: 100%; }
     input { font: inherit; }
     ol, ul { list-style: none; }
-    summary { list-style: none; cursor: pointer; }
-    summary::-webkit-details-marker { display: none; }
 
     /* ── Design Tokens ──────────────────────────────── */
     :root {
@@ -46,7 +43,6 @@
       --text-secondary: #a2abb4;
       --text-tertiary:  #68727c;
       --shadow-soft:    0 18px 60px rgba(0, 0, 0, 0.28);
-      --radius-sm:      6px;
       --radius-md:      10px;
       --radius-lg:      14px;
       --radius-xl:      18px;
@@ -456,36 +452,6 @@
       gap: 14px;
     }
 
-    /* ── Skeleton ───────────────────────────────────── */
-    .skeleton-card {
-      background: var(--bg-surface);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      animation: pulse 1.5s ease-in-out infinite;
-    }
-
-    .skeleton-media {
-      aspect-ratio: 3/4;
-      background: var(--bg-elevated);
-    }
-
-    .skeleton-body { padding: 10px 12px 12px; }
-
-    .skeleton-line {
-      height: 10px;
-      border-radius: 5px;
-      background: var(--bg-elevated);
-      margin-bottom: 7px;
-    }
-
-    .skeleton-line.short { width: 60%; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
     /* ── Exercise Card ──────────────────────────────── */
     .exercise-card {
       background: var(--bg-surface);
@@ -684,96 +650,40 @@
       background: var(--bg-elevated);
     }
 
-    .modal-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding: 14px 18px 0;
-    }
-
-    .meta-chip {
-      display: inline-flex;
-      flex-direction: column;
-      padding: 6px 12px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      gap: 1px;
-    }
-
-    .meta-chip-label {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-tertiary);
-    }
-
-    .meta-chip-value {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-      text-transform: capitalize;
-    }
-
-    .modal-muscles {
-      padding: 14px 18px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-muscles-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-tertiary);
-      margin-bottom: 10px;
-    }
-
-    .muscles-grid {
+    .modal-details {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 20px;
+      padding: 18px;
+      border-top: 1px solid var(--border);
     }
 
-    .muscles-group {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
+    .detail-item {
+      min-width: 0;
+      padding-left: 11px;
+      border-left: 2px solid var(--detail-accent, var(--accent));
     }
 
-    .muscles-group-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
+    .detail-item.body { --detail-accent: #60a5fa; }
+    .detail-item.equipment { --detail-accent: #4ade80; }
+    .detail-item.primary { --detail-accent: var(--accent); }
+    .detail-item.secondary { --detail-accent: #c084fc; }
+
+    .detail-label {
+      margin-bottom: 3px;
       color: var(--text-tertiary);
-      margin-bottom: 7px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
     }
 
-    .muscle-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .muscle-tag {
-      font-size: 11px;
-      font-weight: 500;
-      padding: 3px 9px;
-      border-radius: 5px;
+    .detail-value {
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.4;
       text-transform: capitalize;
-      background: var(--bg-surface);
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-
-    .muscle-tag.primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-      font-weight: 600;
     }
 
     .modal-instructions {
@@ -790,53 +700,71 @@
       display: block;
     }
 
-    .lang-tabs {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid var(--border);
+    .instruction-language {
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) 14px;
+      align-items: center;
+      gap: 10px;
       margin: 10px 0 14px;
+      padding: 0 11px 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--bg-elevated);
+      transition: border-color .15s, box-shadow .15s;
     }
 
-    .lang-tab {
-      font-size: 13px;
-      font-weight: 500;
-      padding: 8px 24px;
-      border: none;
-      background: none;
+    .instruction-language:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-muted);
+    }
+
+    .instruction-language::after {
+      content: '⌄';
       color: var(--text-tertiary);
-      cursor: pointer;
-      position: relative;
-      transition: color 0.15s;
-      letter-spacing: 0.01em;
+      font-size: 15px;
+      line-height: 1;
+      pointer-events: none;
     }
 
-    .lang-tab:hover { color: var(--text-secondary); }
+    .instruction-language-label {
+      color: var(--text-primary);
+      font-size: 11px;
+      font-weight: 700;
+    }
 
-    .lang-tab.active { color: var(--text-primary); font-weight: 600; }
+    .instruction-language-select {
+      width: 100%;
+      min-width: 0;
+      height: 40px;
+      padding: 0;
+      appearance: none;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: right;
+      cursor: pointer;
+    }
 
-    .lang-tab.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--accent);
-      border-radius: 2px 2px 0 0;
+    .instruction-language-select option {
+      background: var(--bg-surface);
+      color: var(--text-primary);
     }
 
     .instructions-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
-      counter-reset: steps;
     }
 
     .instruction-step {
       display: flex;
       gap: 10px;
       align-items: flex-start;
-      counter-increment: steps;
     }
 
     .step-num {
@@ -923,8 +851,7 @@
 
       .modal-gif { max-height: 240px; }
 
-      /* Muscles grid → single col on small */
-      .muscles-grid { grid-template-columns: 1fr; }
+      .modal-details { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 480px) {
@@ -939,247 +866,16 @@
 
       .modal-header { padding: 16px 16px 0; }
       .modal-media  { padding: 12px 16px 0; }
-      .modal-meta   { padding: 12px 16px 0; }
-      .modal-muscles      { padding: 12px 16px 14px; }
+      .modal-details      { padding: 16px; }
       .modal-instructions { padding: 0 16px 20px; }
-
-      .lang-tab { padding: 8px 18px; }
 
       .card-name { font-size: 11.5px; }
     }
-    /* ── DB Setup Button ─────────────────────────────── */
+    /* ── Sidebar Header Layout ───────────────────────── */
     .sidebar-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-
-    .db-setup-btn {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      width: 30px;
-      height: 30px;
-      justify-content: center;
-      padding: 0;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      font-size: 0;
-      font-weight: 500;
-      background: var(--bg-elevated);
-      transition: border-color 0.15s, color 0.15s, background 0.15s;
-      white-space: nowrap;
-    }
-
-    .db-setup-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
-    .db-setup-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-muted); }
-
-    /* ── DB Setup Overlay ────────────────────────────── */
-    .db-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-      padding: 16px;
-    }
-
-    .db-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .db-panel {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      width: min(700px, 100%);
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-      transform: translateY(10px) scale(0.98);
-      transition: transform 0.2s ease;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .db-overlay.open .db-panel {
-      transform: translateY(0) scale(1);
-    }
-
-    .db-panel-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 20px 20px 0;
-    }
-
-    .db-panel-title {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .db-panel-subtitle {
-      color: var(--text-secondary);
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
-    .db-panel-close {
-      color: var(--text-tertiary);
-      font-size: 18px;
-      line-height: 1;
-      padding: 4px;
-      border-radius: var(--radius-sm);
-      flex-shrink: 0;
-    }
-
-    .db-panel-close:hover { color: var(--text-primary); }
-
-    /* ── DB Tabs ─────────────────────────────────────── */
-    .db-tabs {
-      display: flex;
-      gap: 2px;
-      padding: 14px 20px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .db-tab {
-      padding: 7px 14px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-secondary);
-      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      transition: color 0.15s;
-    }
-
-    .db-tab:hover { color: var(--text-primary); }
-    .db-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    /* ── DB Steps ────────────────────────────────────── */
-    .db-steps-wrap {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    .db-step {
-      display: flex;
-      gap: 14px;
-    }
-
-    .db-step-num {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-
-    .db-step-body { flex: 1; min-width: 0; }
-
-    .db-step-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    .db-step-desc {
-      color: var(--text-secondary);
-      font-size: 13px;
-      margin-bottom: 10px;
-      line-height: 1.6;
-    }
-
-    .db-step-desc code {
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0 4px;
-      font-size: 12px;
-      font-family: 'SF Mono', 'Fira Mono', 'Menlo', monospace;
-    }
-
-    /* ── Code Block ──────────────────────────────────── */
-    .code-block {
-      position: relative;
-      background: #1a1a1a;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-    }
-
-    .code-pre {
-      color: #e4e4e7;
-      font-family: 'SF Mono', 'Fira Mono', 'Menlo', 'Consolas', monospace;
-      font-size: 12px;
-      line-height: 1.7;
-      padding: 14px 16px;
-      overflow-x: auto;
-      white-space: pre;
-      margin: 0;
-    }
-
-    .media-layout-block .code-pre { padding-top: 12px; padding-bottom: 12px; }
-
-    .copy-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255,255,255,0.1);
-      color: #a1a1aa;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: var(--radius-sm);
-      padding: 3px 9px;
-      font-size: 11px;
-      font-weight: 500;
-      transition: background 0.15s, color 0.15s;
-      z-index: 1;
-    }
-
-    .copy-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
-    .copy-btn.copied { color: #4ade80; border-color: #4ade80; }
-
-    /* ── Generate Button ─────────────────────────────── */
-    .generate-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      background: var(--accent);
-      color: #fff;
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      font-weight: 600;
-      transition: opacity 0.15s;
-    }
-
-    .generate-btn:hover { opacity: 0.88; }
-    .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .generate-status {
-      margin-left: 10px;
-      font-size: 12px;
-      color: var(--text-secondary);
-      vertical-align: middle;
     }
 
     /* ── Exercise Explorer Pro refresh ──────────────── */
@@ -1280,8 +976,7 @@
     .results-count { order: -1; font-weight: 700; color: #d4d8dc; }
     .explorer-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
     .control-button,
-    .sort-select,
-    .view-button {
+    .sort-select {
       min-height: 34px;
       border: 1px solid var(--border);
       background: var(--bg-surface);
@@ -1290,17 +985,10 @@
       transition: border-color .15s, color .15s, background .15s;
     }
     .control-button { display: inline-flex; align-items: center; gap: 6px; padding: 0 11px; font-size: 11px; font-weight: 700; }
-    .control-button svg, .view-button svg { width: 14px; height: 14px; }
-    .control-button:hover, .view-button:hover { border-color: var(--border-hover); color: var(--text-primary); background: var(--bg-elevated); }
-    .control-button.active { border-color: var(--accent); color: var(--accent); background: var(--accent-muted); }
-    .control-button:disabled { opacity: .45; cursor: not-allowed; }
-    .control-count { min-width: 18px; padding: 1px 5px; border-radius: 9px; background: var(--bg-elevated); color: var(--text-primary); font-size: 9px; text-align: center; }
-    .control-button.active .control-count { background: rgba(255, 107, 44, .2); color: var(--accent-strong); }
+    .control-button svg { width: 14px; height: 14px; }
+    .control-button:hover { border-color: var(--border-hover); color: var(--text-primary); background: var(--bg-elevated); }
     .sort-select { padding: 0 28px 0 10px; font: 600 11px/1 inherit; outline: none; cursor: pointer; }
-    .sort-select:focus-visible, .control-button:focus-visible, .view-button:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); outline: none; }
-    .view-toggle { display: inline-flex; padding: 3px; border: 1px solid var(--border); background: var(--bg-surface); border-radius: 10px; }
-    .view-button { min-width: 28px; min-height: 26px; display: grid; place-items: center; border: 0; border-radius: 7px; }
-    .view-button[aria-pressed="true"] { color: var(--accent); background: var(--accent-muted); }
+    .sort-select:focus-visible, .control-button:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-muted); outline: none; }
     .grid-wrapper { padding: 22px 32px 42px; }
     .exercise-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
 
@@ -1319,19 +1007,6 @@
     }
     .card-media { aspect-ratio: 1 / 1; background: #e8e8e6; }
     .card-media::after { content: ''; position: absolute; inset: 55% 0 0; background: linear-gradient(transparent, rgba(0,0,0,.32)); pointer-events: none; z-index: 1; }
-    .card-id {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 2;
-      padding: 4px 7px;
-      border-radius: 7px;
-      background: rgba(7,9,11,.72);
-      backdrop-filter: blur(8px);
-      color: rgba(255,255,255,.82);
-      font: 700 9px/1.2 'SF Mono', Consolas, monospace;
-      letter-spacing: .05em;
-    }
     .card-preview {
       position: absolute;
       right: 10px;
@@ -1359,13 +1034,6 @@
     .tag-equip { background: rgba(68, 211, 142, .1); color: #70dba7; }
     .tag-target { background: rgba(192, 132, 252, .11); color: #cda0fa; }
 
-    .exercise-grid.list-view { grid-template-columns: 1fr; }
-    .list-view .exercise-card { display: grid; grid-template-columns: 112px minmax(0, 1fr); min-height: 112px; }
-    .list-view .card-media { aspect-ratio: 1; }
-    .list-view .card-body { display: flex; flex-direction: column; justify-content: center; padding: 16px 18px; }
-    .list-view .card-name { min-height: 0; font-size: 15px; -webkit-line-clamp: 1; }
-    .list-view .card-preview { display: none; }
-
     .modal-overlay { background: rgba(2, 3, 4, .76); }
     .modal-panel {
       width: min(960px, 100%);
@@ -1373,7 +1041,7 @@
       max-height: none;
       display: grid;
       grid-template-columns: minmax(280px, .85fr) minmax(340px, 1.15fr);
-      grid-template-rows: auto auto auto minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr) auto;
       overflow: hidden;
       border-color: #333a41;
       box-shadow: var(--shadow-soft);
@@ -1381,23 +1049,8 @@
     .modal-header { grid-column: 1 / -1; padding: 22px 24px 18px; border-bottom: 1px solid var(--border); }
     .modal-title { font-size: 22px; letter-spacing: -.025em; }
     .modal-header-actions { display: flex; align-items: center; gap: 6px; margin-left: auto; }
-    .modal-action {
-      min-height: 30px;
-      padding: 0 9px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg-elevated);
-      color: var(--text-secondary);
-      font-size: 10px;
-      font-weight: 700;
-      transition: color .15s, border-color .15s, background .15s;
-    }
-    .modal-action:hover, .modal-action:focus-visible { color: var(--text-primary); border-color: var(--border-hover); outline: none; }
-    .modal-action[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-muted); }
-    .modal-action-status { min-width: 46px; color: var(--accent); font-size: 10px; font-weight: 700; text-align: right; }
-    .modal-media { grid-column: 1; grid-row: 2 / span 3; min-height: 0; padding: 22px; overflow-y: auto; border-right: 1px solid var(--border); }
+    .modal-media { grid-column: 1; grid-row: 2 / span 2; min-height: 0; padding: 22px; overflow-y: auto; border-right: 1px solid var(--border); }
     .modal-gif { max-height: none; aspect-ratio: 1; object-fit: cover; background: #e8e8e6; border-radius: 14px; }
-    .media-attribution { margin-top: 10px; color: var(--text-tertiary); font-size: 10px; line-height: 1.45; }
     .modal-navigation { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
     .modal-nav-button {
       min-width: 0;
@@ -1416,21 +1069,18 @@
     .modal-nav-button:last-child { text-align: right; }
     .modal-nav-button:hover, .modal-nav-button:focus-visible { color: var(--text-primary); border-color: var(--accent); outline: none; }
     .modal-nav-button:disabled { opacity: .4; cursor: not-allowed; }
-    .modal-meta { grid-column: 2; grid-row: 2; padding: 22px 22px 0; }
-    .meta-chip { flex: 1 1 120px; padding: 9px 12px; }
-    .modal-muscles { grid-column: 2; grid-row: 3; padding: 18px 22px; }
     .modal-instructions {
       grid-column: 2;
-      grid-row: 4;
+      grid-row: 2;
       min-width: 0;
       min-height: 0;
       display: flex;
       flex-direction: column;
-      padding: 0 14px 24px 22px;
+      padding: 0 14px 18px 22px;
       overflow: hidden;
     }
-    .lang-tabs { overflow-x: auto; scrollbar-width: thin; }
-    .lang-tab { flex: 0 0 auto; padding: 9px 15px; }
+    .modal-instructions-label { padding-top: 22px; }
+    .modal-details { grid-column: 2; grid-row: 3; padding: 18px 22px 22px; }
     .instructions-list {
       min-height: 0;
       flex: 1;
@@ -1454,7 +1104,6 @@
       .sidebar-header { padding: 12px 14px; }
       .sidebar-subtitle, .sidebar-kicker { display: none; }
       .mobile-filter-toggle { display: inline-flex; }
-      .db-setup-btn { width: 30px; height: 30px; padding: 0; justify-content: center; font-size: 0; }
       .sidebar:not(.filters-open) .sidebar-body { display: none; }
       .sidebar.filters-open { max-height: min(70dvh, 560px); }
       .sidebar.filters-open .mobile-filter-toggle { border-color: var(--accent); color: var(--accent); background: var(--accent-muted); }
@@ -1469,23 +1118,114 @@
       .sort-select { flex: 0 0 128px; min-width: 0; }
       .grid-wrapper { padding: 16px 14px 30px; }
       .exercise-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+      .modal-overlay {
+        align-items: stretch;
+        padding: 0;
+      }
       .modal-panel {
-        height: min(92dvh, 760px);
-        max-height: none;
+        width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
         display: flex;
         overflow-y: auto;
         overscroll-behavior: contain;
+        border: 0;
+        border-radius: 0;
+        scroll-padding-top: 70px;
       }
-      .modal-header { flex-wrap: wrap; }
-      .modal-title { width: calc(100% - 40px); }
-      .modal-header-actions { order: 2; width: 100%; margin-left: 0; }
-      .modal-action-status { margin-left: auto; }
-      .modal-media { padding: 16px; border-right: none; }
-      .modal-gif { max-height: 300px; object-fit: contain; }
-      .modal-meta { padding: 0 16px; }
-      .modal-muscles { padding: 16px; }
-      .modal-instructions { display: block; flex: 0 0 auto; min-height: auto; padding: 0 16px 22px; overflow: visible; }
-      .instructions-list { overflow: visible; padding-right: 0; }
+      .modal-header {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 10px;
+        padding: calc(12px + env(safe-area-inset-top)) 14px 12px;
+        background: color-mix(in srgb, var(--bg-surface) 94%, transparent);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-title {
+        width: auto;
+        min-width: 0;
+        flex: 1;
+        font-size: 18px;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .modal-header-actions {
+        order: initial;
+        width: auto;
+        flex: 0 0 auto;
+        margin-left: 0;
+      }
+      .modal-close { width: 36px; height: 36px; margin-top: 0; }
+
+      .modal-instructions {
+        order: 1;
+        display: block;
+        flex: 0 0 auto;
+        min-height: auto;
+        padding: 0 16px 24px;
+        overflow: visible;
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-instructions-label {
+        padding-top: 18px;
+        font-size: 11px;
+      }
+      .instruction-language { margin: 12px 0 18px; }
+      .instructions-list {
+        gap: 14px;
+        overflow: visible;
+        padding-right: 0;
+      }
+      .instruction-step { gap: 12px; }
+      .step-num { width: 26px; height: 26px; margin-top: 0; }
+      .step-text {
+        min-width: 0;
+        font-size: 14px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+      }
+
+      .modal-media {
+        order: 2;
+        flex: 0 0 auto;
+        padding: 20px 16px;
+        overflow: visible;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .modal-gif {
+        height: min(58vw, 260px);
+        max-height: none;
+        aspect-ratio: auto;
+        object-fit: contain;
+      }
+      .modal-navigation { margin-top: 12px; }
+      .modal-nav-button {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 11px;
+      }
+
+      .modal-details {
+        order: 3;
+        flex: 0 0 auto;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 14px;
+        padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+        border-top: 0;
+      }
+      .detail-item { padding-left: 10px; }
+      .detail-label { font-size: 9px; line-height: 1.35; }
+      .detail-value { font-size: 13px; line-height: 1.45; }
     }
 
     @media (max-width: 480px) {
@@ -1495,9 +1235,16 @@
       .card-body { padding: 11px; }
       .card-name { min-height: 32px; margin-bottom: 8px; font-size: 12px; }
       .tag-target { display: none; }
-      .list-view .exercise-card { grid-template-columns: 92px minmax(0, 1fr); min-height: 92px; }
-      .list-view .card-body { padding: 12px 14px; }
-      .modal-panel { height: 95dvh; max-height: none; }
+      .modal-panel { height: 100dvh; max-height: 100dvh; }
+      .modal-header { padding-inline: 12px; }
+      .modal-instructions,
+      .modal-media { padding-inline: 14px; }
+      .modal-details { padding-inline: 14px; }
+    }
+
+    @media (max-width: 360px) {
+      .modal-title { font-size: 16px; }
+      .modal-details { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1535,15 +1282,6 @@
           <option value="de">DE</option>
         </select>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">☀</button>
-        <button class="db-setup-btn" id="db-setup-open" type="button" title="Database Setup">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <ellipse cx="8" cy="4" rx="6" ry="2.5"/>
-            <path d="M2 4v3c0 1.38 2.69 2.5 6 2.5s6-1.12 6-2.5V4"/>
-            <path d="M2 7v3c0 1.38 2.69 2.5 6 2.5s6-1.12 6-2.5V7"/>
-            <path d="M2 10v2c0 1.38 2.69 2.5 6 2.5s6-1.12 6-2.5v-2"/>
-          </svg>
-          <span data-i18n="dbSetup">DB Setup</span>
-        </button>
       </div>
     </div>
     <div class="sidebar-body" id="sidebar-filters">
@@ -1640,14 +1378,6 @@
           <option value="category" data-i18n="bodyPart">Body part</option>
           <option value="equipment" data-i18n="equipment">Equipment</option>
         </select>
-        <div class="view-toggle" role="group" aria-label="Choose results view">
-          <button class="view-button" type="button" data-view="grid" aria-label="Grid view" aria-pressed="true">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
-          </button>
-          <button class="view-button" type="button" data-view="list" aria-label="List view" aria-pressed="false">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M5 3h9M5 8h9M5 13h9"/><circle cx="2" cy="3" r=".6" fill="currentColor"/><circle cx="2" cy="8" r=".6" fill="currentColor"/><circle cx="2" cy="13" r=".6" fill="currentColor"/></svg>
-          </button>
-        </div>
       </div>
     </div>
     <div class="grid-wrapper">
@@ -1659,94 +1389,24 @@
   </main>
 </div>
 
-<!-- DB Setup Overlay -->
-<div class="db-overlay" id="db-overlay" role="dialog" aria-modal="true" aria-labelledby="db-setup-title">
-  <div class="db-panel" id="db-panel">
-    <div class="db-panel-header">
-      <div>
-        <h2 class="db-panel-title" id="db-setup-title" data-i18n="dbSetup">Database Setup</h2>
-        <p class="db-panel-subtitle" data-i18n="dbIntro">Import 1,324 exercises into your database in 3 steps.</p>
-      </div>
-      <button class="db-panel-close" id="db-setup-close" aria-label="Close">✕</button>
-    </div>
-
-    <!-- DB Tabs -->
-    <div class="db-tabs" role="tablist">
-      <button class="db-tab active" data-db="mssql" role="tab">SQL Server</button>
-      <button class="db-tab" data-db="postgresql" role="tab">PostgreSQL</button>
-      <button class="db-tab" data-db="mysql" role="tab">MySQL</button>
-      <button class="db-tab" data-db="sqlite" role="tab">SQLite</button>
-    </div>
-
-    <div class="db-steps-wrap">
-      <!-- Step 1 -->
-      <div class="db-step">
-        <div class="db-step-num">1</div>
-        <div class="db-step-body">
-          <h3 class="db-step-title" data-i18n="createTable">Create Table</h3>
-          <p class="db-step-desc" data-i18n="dbStep1Desc">Run this in your database client (SSMS, DBeaver, pgAdmin, etc.):</p>
-          <div class="code-block">
-            <button class="copy-btn" id="copy-create-btn" data-i18n="copy">Copy</button>
-            <pre class="code-pre" id="create-table-sql"></pre>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 2 -->
-      <div class="db-step">
-        <div class="db-step-num">2</div>
-        <div class="db-step-body">
-          <h3 class="db-step-title" data-i18n="importData">Import Data</h3>
-          <p class="db-step-desc" data-i18n-html="dbStep2Desc">Generate a <code>.sql</code> file with all 1,324 INSERT statements — runs in any DB client. The file is built entirely in your browser, nothing is uploaded.</p>
-          <button class="generate-btn" id="generate-sql-btn">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14">
-              <path d="M8 2v8M5 7l3 3 3-3"/><path d="M2 12h12"/>
-            </svg>
-            <span data-i18n="generateSql">Generate INSERT SQL</span>
-          </button>
-          <span class="generate-status" id="generate-status"></span>
-        </div>
-      </div>
-
-      <!-- Step 3 -->
-      <div class="db-step">
-        <div class="db-step-num">3</div>
-        <div class="db-step-body">
-          <h3 class="db-step-title" data-i18n="mediaFiles">Media Files</h3>
-          <p class="db-step-desc" data-i18n-html="dbStep3Desc">Copy the <code>images/</code> and <code>videos/</code> folders to your web server root (or a CDN). The <code>image</code> and <code>gif_url</code> columns store relative paths — prepend your base URL in your app if needed.</p>
-          <div class="code-block media-layout-block">
-            <pre class="code-pre" data-i18n="dbMediaTree">your-server.com/
-├── images/   ← 1,324 JPG thumbnails
-└── videos/   ← 1,324 GIF animations</pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Modal -->
 <div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-panel" id="modal-panel">
     <div class="modal-header">
       <h2 class="modal-title" id="modal-title"></h2>
       <div class="modal-header-actions">
-        <button class="modal-action" id="modal-copy-link" type="button" data-i18n="copyLink">Copy link</button>
-        <span class="modal-action-status" id="modal-action-status" role="status" aria-live="polite"></span>
         <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
       </div>
     </div>
     <div class="modal-media">
       <img class="modal-gif" id="modal-gif" alt="" />
-      <p class="media-attribution" id="media-attribution"></p>
       <div class="modal-navigation" aria-label="Exercise navigation">
         <button class="modal-nav-button" id="modal-previous" type="button">← Previous</button>
         <button class="modal-nav-button" id="modal-next" type="button">Next →</button>
       </div>
     </div>
-    <div class="modal-meta" id="modal-meta"></div>
-    <div class="modal-muscles" id="modal-muscles"></div>
     <div class="modal-instructions" id="modal-instructions"></div>
+    <dl class="modal-details" id="modal-details"></dl>
   </div>
 </div>
 
@@ -1765,7 +1425,6 @@
       target: new Set(),
     },
     sort: 'name-asc',
-    view: 'grid',
     language: 'en',
     page: 0,
     pageSize: 60,
@@ -1786,23 +1445,17 @@
   const themeToggleEl = document.getElementById('theme-toggle');
   const sortEl        = document.getElementById('sort-exercises');
   const randomEl      = document.getElementById('random-exercise');
-  const viewButtons   = [...document.querySelectorAll('[data-view]')];
   const modalOverlay  = document.getElementById('modal-overlay');
   const modalTitle    = document.getElementById('modal-title');
   const modalGif      = document.getElementById('modal-gif');
-  const mediaAttribution = document.getElementById('media-attribution');
-  const modalMeta     = document.getElementById('modal-meta');
-  const modalMuscles  = document.getElementById('modal-muscles');
+  const modalDetails  = document.getElementById('modal-details');
   const modalInstr    = document.getElementById('modal-instructions');
   const modalClose    = document.getElementById('modal-close');
   const modalPanel    = document.getElementById('modal-panel');
-  const modalCopyLink = document.getElementById('modal-copy-link');
-  const modalActionStatus = document.getElementById('modal-action-status');
   const modalPrevious = document.getElementById('modal-previous');
   const modalNext     = document.getElementById('modal-next');
   let modalTrigger    = null;
   let currentModalId  = null;
-  let statusTimer     = null;
 
   // ── Utility ────────────────────────────────────────
   function debounce(fn, ms) {
@@ -1843,9 +1496,6 @@
       const count = element.dataset.i18nCount;
       element.textContent = t(element.dataset.i18n, count ? { count: formatNumber(Number(count)) } : {});
     });
-    document.querySelectorAll('[data-i18n-html]').forEach(element => {
-      element.innerHTML = t(element.dataset.i18nHtml);
-    });
     document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
       element.placeholder = t(element.dataset.i18nPlaceholder);
     });
@@ -1860,11 +1510,6 @@
     document.querySelector('.catalog-metric').setAttribute('aria-label', t('availableExercises', { count: formatNumber(state.exercises.length) }));
     document.querySelector('.explorer-controls').setAttribute('aria-label', t('displayControls'));
     sortEl.setAttribute('aria-label', t('sortExercises'));
-    document.querySelector('.view-toggle').setAttribute('aria-label', t('chooseView'));
-    document.querySelector('[data-view="grid"]').setAttribute('aria-label', t('gridView'));
-    document.querySelector('[data-view="list"]').setAttribute('aria-label', t('listView'));
-    document.getElementById('db-setup-open').title = t('dbSetup');
-    document.getElementById('db-setup-close').setAttribute('aria-label', t('close'));
     modalClose.setAttribute('aria-label', t('close'));
     document.querySelector('.modal-navigation').setAttribute('aria-label', t('exerciseNavigation'));
   }
@@ -1914,7 +1559,6 @@
 
     const sort = params.get('sort');
     if (['name-asc', 'name-desc', 'category', 'equipment'].includes(sort)) state.sort = sort;
-    if (params.get('view') === 'list') state.view = 'list';
   }
 
   function modalCollection() {
@@ -1945,31 +1589,6 @@
     openModal(collection[nextIndex].id);
   }
 
-  function showModalStatus(message) {
-    clearTimeout(statusTimer);
-    modalActionStatus.textContent = message;
-    statusTimer = setTimeout(() => { modalActionStatus.textContent = ''; }, 1800);
-  }
-
-  async function copyText(text, successMessage) {
-    try {
-      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
-      else {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        textarea.remove();
-      }
-      showModalStatus(successMessage);
-    } catch {
-      showModalStatus(t('copyFailed'));
-    }
-  }
-
   function syncUrl() {
     const params = new URLSearchParams();
     params.set('lang', state.language);
@@ -1978,7 +1597,6 @@
       if (state.filters[key].size) params.set(key, [...state.filters[key]].join(','));
     }
     if (state.sort !== 'name-asc') params.set('sort', state.sort);
-    if (state.view !== 'grid') params.set('view', state.view);
     const query = params.toString();
     const nextUrl = `${location.pathname}${query ? `?${query}` : ''}${location.hash}`;
     try { history.replaceState(null, '', nextUrl); } catch { /* file:// fallback */ }
@@ -1992,8 +1610,6 @@
 
   function updateDisplayControls() {
     sortEl.value = state.sort;
-    gridEl.classList.toggle('list-view', state.view === 'list');
-    viewButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === state.view)));
     const activeFilterCount = ['category', 'equipment', 'target']
       .reduce((total, key) => total + state.filters[key].size, 0)
       + (state.search.trim() ? 1 : 0);
@@ -2250,17 +1866,12 @@
     gif.dataset.src = ex.gif_url;
     gif.alt = '';
 
-    const idBadge = document.createElement('span');
-    idBadge.className = 'card-id';
-    idBadge.textContent = `#${ex.id}`;
-
     const previewBadge = document.createElement('span');
     previewBadge.className = 'card-preview';
     previewBadge.textContent = t('preview');
 
     media.appendChild(thumb);
     media.appendChild(gif);
-    media.appendChild(idBadge);
     media.appendChild(previewBadge);
 
     // Body
@@ -2295,23 +1906,6 @@
     article.appendChild(body);
 
     return article;
-  }
-
-  function renderSkeletons(count) {
-    gridEl.innerHTML = '';
-    const frag = document.createDocumentFragment();
-    for (let i = 0; i < count; i++) {
-      const card = document.createElement('div');
-      card.className = 'skeleton-card';
-      card.innerHTML = `
-        <div class="skeleton-media"></div>
-        <div class="skeleton-body">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line short"></div>
-        </div>`;
-      frag.appendChild(card);
-    }
-    gridEl.appendChild(frag);
   }
 
   // ── Results Bar ────────────────────────────────────
@@ -2374,58 +1968,37 @@
     modalTitle.textContent = ex.name;
     modalGif.src = ex.gif_url;
     modalGif.alt = ex.name;
-    mediaAttribution.textContent = `${ex.attribution} · ${t('mediaId')} ${ex.media_id}`;
 
-    // Meta chips
-    modalMeta.innerHTML = '';
-    const metaItems = [
-      { label: t('bodyPart'), value: localizeTaxonomy(ex.body_part || ex.category) },
-      { label: t('equipment'), value: localizeTaxonomy(ex.equipment) },
-      { label: t('target'), value: localizeTaxonomy(ex.target) },
-    ];
-    metaItems.forEach(({ label, value }) => {
-      const chip = document.createElement('div');
-      chip.className = 'meta-chip';
-      chip.innerHTML = `<span class="meta-chip-label">${label}</span><span class="meta-chip-value">${value}</span>`;
-      modalMeta.appendChild(chip);
-    });
-
-    // Muscles
-    modalMuscles.innerHTML = '';
+    // Exercise details
     const primaryMuscles = ex.target ? [ex.target] : [];
     const secondaryRaw = ex.secondary_muscles || (ex.muscle_group ? [ex.muscle_group] : []);
     const secondaryMuscles = secondaryRaw.filter(m => m !== ex.target);
+    const detailItems = [
+      { type: 'body', label: t('bodyPart'), values: [ex.body_part || ex.category] },
+      { type: 'equipment', label: t('equipment'), values: [ex.equipment] },
+      { type: 'primary', label: t('primaryMuscle'), values: primaryMuscles },
+      { type: 'secondary', label: t('secondaryMuscles'), values: secondaryMuscles },
+    ];
 
-    const musclesHeader = document.createElement('div');
-    musclesHeader.className = 'modal-muscles-label';
-    musclesHeader.textContent = t('muscles');
-    modalMuscles.appendChild(musclesHeader);
+    modalDetails.innerHTML = '';
+    detailItems.forEach(({ type, label, values }) => {
+      const item = document.createElement('div');
+      item.className = `detail-item ${type}`;
 
-    const musclesGrid = document.createElement('div');
-    musclesGrid.className = 'muscles-grid';
+      const term = document.createElement('dt');
+      term.className = 'detail-label';
+      term.textContent = label;
 
-    const makeMuscleGroup = (title, names, isPrimary) => {
-      const group = document.createElement('div');
-      group.className = 'muscles-group';
-      const lbl = document.createElement('div');
-      lbl.className = 'muscles-group-label';
-      lbl.textContent = title;
-      const row = document.createElement('div');
-      row.className = 'muscle-tags';
-      names.forEach(name => {
-        const t = document.createElement('span');
-        t.className = 'muscle-tag' + (isPrimary ? ' primary' : '');
-        t.textContent = localizeTaxonomy(name);
-        row.appendChild(t);
-      });
-      group.appendChild(lbl);
-      group.appendChild(row);
-      return group;
-    };
+      const description = document.createElement('dd');
+      description.className = 'detail-value';
+      description.textContent = values.length
+        ? values.map(localizeTaxonomy).join(' · ')
+        : '—';
 
-    if (primaryMuscles.length > 0) musclesGrid.appendChild(makeMuscleGroup(t('primary'), primaryMuscles, true));
-    if (secondaryMuscles.length > 0) musclesGrid.appendChild(makeMuscleGroup(t('secondary'), secondaryMuscles, false));
-    if (primaryMuscles.length > 0 || secondaryMuscles.length > 0) modalMuscles.appendChild(musclesGrid);
+      item.appendChild(term);
+      item.appendChild(description);
+      modalDetails.appendChild(item);
+    });
 
     // Instructions — format is always keyed by language code
     modalInstr.innerHTML = '';
@@ -2455,26 +2028,36 @@
       }
 
       if (langs.length > 1) {
-        const tabs = document.createElement('div');
-        tabs.className = 'lang-tabs';
         const preferredInstructionLanguage = ['en', 'es', 'fr', 'it'].includes(state.language) ? state.language : 'en';
         const preferredIndex = Math.max(0, langs.findIndex(language => language.code === preferredInstructionLanguage));
-        const tabButtons = langs.map((l, i) => {
-          const btn = document.createElement('button');
-          btn.className = 'lang-tab' + (i === preferredIndex ? ' active' : '');
-          btn.textContent = LANG_LABELS[l.code] ?? l.code;
-          tabs.appendChild(btn);
-          return btn;
-        });
-        modalInstr.appendChild(tabs);
 
-        tabButtons.forEach((btn, i) => {
-          btn.addEventListener('click', () => {
-            tabButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderSteps(langs[i].steps);
-          });
+        const languageControl = document.createElement('label');
+        languageControl.className = 'instruction-language';
+
+        const languageLabel = document.createElement('span');
+        languageLabel.className = 'instruction-language-label';
+        languageLabel.textContent = t('instructionLanguage');
+
+        const languageSelect = document.createElement('select');
+        languageSelect.className = 'instruction-language-select';
+        languageSelect.setAttribute('aria-label', t('instructionLanguage'));
+
+        langs.forEach(({ code }) => {
+          const option = document.createElement('option');
+          option.value = code;
+          option.textContent = LANG_LABELS[code] ?? code;
+          languageSelect.appendChild(option);
         });
+
+        languageSelect.value = langs[preferredIndex].code;
+        languageSelect.addEventListener('change', () => {
+          const selectedLanguage = langs.find(language => language.code === languageSelect.value);
+          if (selectedLanguage) renderSteps(selectedLanguage.steps);
+        });
+
+        languageControl.appendChild(languageLabel);
+        languageControl.appendChild(languageSelect);
+        modalInstr.appendChild(languageControl);
 
         renderSteps(langs[preferredIndex].steps);
       } else {
@@ -2498,8 +2081,6 @@
     modalGif.src = '';
     setExerciseHash();
     currentModalId = null;
-    clearTimeout(statusTimer);
-    modalActionStatus.textContent = '';
     if (modalTrigger) modalTrigger.focus();
     modalTrigger = null;
   }
@@ -2539,13 +2120,6 @@
       applyFilters();
     });
 
-    viewButtons.forEach(button => button.addEventListener('click', () => {
-      state.view = button.dataset.view;
-      updateDisplayControls();
-      syncUrl();
-    }));
-
-    modalCopyLink.addEventListener('click', () => copyText(location.href, t('linkCopied')));
     modalPrevious.addEventListener('click', () => navigateModal(-1));
     modalNext.addEventListener('click', () => navigateModal(1));
 
@@ -2645,7 +2219,7 @@
           mobileFilterToggleEl.focus();
         }
       }
-      if (modalOverlay.classList.contains('open') && !e.target.matches('input, textarea, select') && !e.target.closest('.lang-tabs')) {
+      if (modalOverlay.classList.contains('open') && !e.target.matches('input, textarea, select')) {
         if (e.key === 'ArrowLeft') navigateModal(-1);
         if (e.key === 'ArrowRight') navigateModal(1);
       }
@@ -2676,80 +2250,7 @@
 
   // ── Boot ───────────────────────────────────────────
   init();
-
-  // ══════════════════════════════════════════════════
-  // ── DB Setup ───────────────────────────────────────
-  // ══════════════════════════════════════════════════
-
-  const { DB_SQL, buildInserts } = window.ExerciseSqlExport;
-
-  let currentDb = 'mssql';
-
-  const dbOverlay      = document.getElementById('db-overlay');
-  const dbOpenBtn      = document.getElementById('db-setup-open');
-  const dbCloseBtn     = document.getElementById('db-setup-close');
-  const dbTabs         = document.querySelectorAll('.db-tab');
-  const createSqlEl    = document.getElementById('create-table-sql');
-  const copyCreateBtn  = document.getElementById('copy-create-btn');
-  const generateBtn    = document.getElementById('generate-sql-btn');
-  const generateStatus = document.getElementById('generate-status');
-
-  function openDbSetup() {
-    dbOverlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    switchDbTab(currentDb);
-  }
-
-  function closeDbSetup() {
-    dbOverlay.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function switchDbTab(db) {
-    currentDb = db;
-    dbTabs.forEach(t => t.classList.toggle('active', t.dataset.db === db));
-    createSqlEl.textContent = DB_SQL[db];
-  }
-
-  function copyToClipboard(text, btn) {
-    navigator.clipboard.writeText(text).then(() => {
-      btn.textContent = t('copied');
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = t('copy'); btn.classList.remove('copied'); }, 2000);
-    });
-  }
-
-  function generateInsertSql() {
-    generateBtn.disabled = true;
-    generateStatus.textContent = t('generating');
-
-    setTimeout(() => {
-      try {
-        const sql = buildInserts(EXERCISES, currentDb);
-        const blob = new Blob([sql], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `exercises_insert_${currentDb}.sql`;
-        a.click();
-        URL.revokeObjectURL(url);
-        generateStatus.textContent = `✓ ${t('downloaded', { file: `exercises_insert_${currentDb}.sql` })}`;
-      } catch (e) {
-        generateStatus.textContent = t('errorGenerating');
-        console.error(e);
-      }
-      generateBtn.disabled = false;
-    }, 10);
-  }
-
-  // Wire DB Setup events
-  dbOpenBtn.addEventListener('click', openDbSetup);
-  dbCloseBtn.addEventListener('click', closeDbSetup);
-  dbOverlay.addEventListener('click', e => { if (e.target === dbOverlay) closeDbSetup(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && dbOverlay.classList.contains('open')) closeDbSetup(); });
-  dbTabs.forEach(tab => tab.addEventListener('click', () => switchDbTab(tab.dataset.db)));
-  copyCreateBtn.addEventListener('click', () => copyToClipboard(DB_SQL[currentDb], copyCreateBtn));
-  generateBtn.addEventListener('click', generateInsertSql);
 </script>
 </body>
+</html>
 </html>
