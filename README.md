@@ -47,6 +47,7 @@
 - [Data Schema](#-data-schema)
 - [Sample Exercises](#-sample-exercises)
 - [Usage Examples](#-usage-examples)
+- [Dataset Validation](#-dataset-validation)
 - [License & Use](#-license--use)
 
 ---
@@ -87,12 +88,24 @@ This repository includes two ready-to-use HTML tools — no server required, jus
 A fully client-side exercise explorer with:
 - Live search across all 1,324 exercises
 - Filter by category, equipment, and target muscle
+- Sort by name, body part, or equipment and switch between grid and list views
+- Shareable URLs that preserve searches, filters, sorting, and direct exercise links
+- Random exercise discovery within the current filtered results
+- Previous/next navigation inside exercise details, including keyboard arrow shortcuts
+- Copy a direct exercise link from the detail view
+- Automatic light/dark themes with a persistent manual preference
+- Complete interface localization in English, Spanish, French, Portuguese, Italian, and German
+- Live facet counts that adapt to the current search and other active filters
+- Compact searchable multi-select filters for category, equipment, and target muscle
+- Collapsible mobile filters with an active-filter counter
 - Infinite scroll grid
 - Click any card to see full details and instructions in English, Spanish, Italian, Turkish, Russian, Chinese, Hindi, Polish, Korean, or French
 
 ### `setup.html` — Developer Setup Guide
 
 A step-by-step guide for integrating the dataset into your own application:
+
+The guide interface follows the browser language selector and is available in English, Spanish, French, Portuguese, Italian, and German. Technical code examples remain in their source programming language.
 
 1. **Database Setup** — `CREATE TABLE` SQL for SQL Server, PostgreSQL, MySQL, and SQLite. Generate a ready-to-run `.sql` file with all 1,324 INSERT statements, built entirely in your browser.
 2. **API Integration** — Copy-paste client code in **JavaScript, Python, C#, Java, PHP, Go, and cURL** showing how to call your backend API. Enter your base URL and all examples update live.
@@ -106,9 +119,16 @@ A step-by-step guide for integrating the dataset into your own application:
 exercises-dataset/
 ├── data/
 │   ├── exercises.json        # Full dataset — 1,324 exercise records (JSON array)
-│   └── exercises.schema.json # JSON Schema (2020-12) describing every record
+│   ├── exercises.schema.json # JSON Schema (2020-12) describing every record
+│   └── exercises.js          # Generated browser-ready copy shared by both HTML tools
 ├── images/                  # 1,324 × 180×180 thumbnails  (© Gym visual)
 ├── videos/                  # 1,324 × 180×180 animation GIFs  (© Gym visual)
+├── scripts/
+│   ├── build-index.mjs      # Regenerates the standalone browser dataset
+│   ├── i18n.js              # UI and exercise-taxonomy translations for six languages
+│   ├── sql-export.js        # Shared SQL schemas and INSERT generator
+│   └── validate-dataset.mjs # Validates records, media, HTML, and SQL exporter
+├── .github/workflows/       # Runs validation and synchronization checks in CI
 ├── index.html               # Interactive exercise browser (client-side, no server needed)
 ├── setup.html               # Developer setup guide (DB import + API integration)
 ├── NOTICE.md                # Media attribution & license terms
@@ -121,6 +141,11 @@ exercises-dataset/
 - **`data/exercises.schema.json`** — A [JSON Schema](https://json-schema.org/) (Draft 2020-12) that formally describes every field, its type and constraints. Use it to validate the dataset or your own additions with any standard JSON Schema validator.
 - **`images/`, `videos/`** — 180×180 thumbnails and animation GIFs (© [Gym visual](https://gymvisual.com/), used with permission).
 - **`index.html`** — Standalone exercise browser. Open directly in any modern browser.
+- **`data/exercises.js`** — Generated browser-ready copy used by both HTML tools so they work directly under `file://` without duplicating data inside each page.
+- **`scripts/build-index.mjs`** — Safely regenerates `data/exercises.js` from the canonical JSON and supports a read-only `--check` mode.
+- **`scripts/i18n.js`** — Six-language UI dictionaries plus localized category, equipment, and muscle terminology.
+- **`scripts/sql-export.js`** — Shared SQL exporter used by both HTML tools, with schemas for SQL Server, PostgreSQL, MySQL, and SQLite.
+- **`scripts/validate-dataset.mjs`** — Dependency-free integrity checks for records, media, HTML scripts, DOM references, and SQL exports.
 - **`setup.html`** — Developer guide for DB setup, API integration, and LLM-assisted backend generation.
 - **`LICENSE`, `NOTICE.md`** — MIT (code/data) + the Gym visual media terms.
 
@@ -440,6 +465,41 @@ const data = exercises as Exercise[];
 
 const randomWorkout: Exercise[] = data.slice(0, 6);
 console.log("First 6 exercises:", randomWorkout.map(e => e.name));
+```
+
+---
+
+## ✅ Dataset Validation
+
+Run the dependency-free validator before submitting dataset changes:
+
+```bash
+node scripts/validate-dataset.mjs
+```
+
+It checks the JSON against the repository schema, verifies unique identifiers,
+confirms media paths and files, executes the shared SQL exporter for all four
+supported databases, and reports duplicate names or differences between
+full-text and step-by-step instructions. The same command runs in GitHub
+Actions for every pull request and push to `main`.
+
+The current dataset reports two non-blocking editorial warnings. Six exercise
+names are shared by records with different IDs and media, so they are preserved
+rather than renamed automatically. Some full-text instructions differ from the
+corresponding step list in wording or segmentation; neither representation is
+overwritten without a language review.
+
+The HTML tools share a generated JavaScript copy of the dataset so they work
+without a server. After changing `data/exercises.json`, regenerate that copy with:
+
+```bash
+node scripts/build-index.mjs
+```
+
+To verify synchronization without modifying files, run:
+
+```bash
+node scripts/build-index.mjs --check
 ```
 
 ---
